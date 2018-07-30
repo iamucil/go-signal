@@ -3,6 +3,7 @@ package signal
 import (
 	"fmt"
 
+	"github.com/RadicalApp/libsignal-protocol-go/fingerprint"
 	"github.com/RadicalApp/libsignal-protocol-go/keys/prekey"
 	"github.com/RadicalApp/libsignal-protocol-go/logger"
 	"github.com/RadicalApp/libsignal-protocol-go/session"
@@ -14,12 +15,14 @@ func Serializing() {
 	serializer := newSerializer()
 
 	alice := newUser("Alice", 1, serializer)
-	bob := newUser("Bob", 1, serializer)
+	bob := newUser("Bob", 2, serializer)
 
 	// create our users who will talk to each other
 	alice.buildSession(bob.address, serializer)
 	bob.buildSession(alice.address, serializer)
-
+	fmt.Printf("bob's registration id: %# v\n", bob.registrationID)
+	fmt.Printf("bob's device id: %# v\n", bob.deviceID)
+	fmt.Printf("bob's prekey: %# v\n", bob.preKeys[0].ID())
 	// fmt.Printf("%# v\n", bob)
 	retrivedPreKey := prekey.NewBundle(
 		bob.registrationID,
@@ -40,6 +43,7 @@ func Serializing() {
 	sessionCipher := session.NewCipher(alice.sessionBuilder, bob.address)
 	fmt.Printf("Session Cipher: % #v\n", sessionCipher)
 	sessionCipher.Encrypt(plainTextMessage)
+	fmt.Printf("%# v\n", plainTextMessage)
 
 	// Serialize our session so it can be stored
 	loadedSession := alice.sessionStore.LoadSession(bob.address)
@@ -54,4 +58,25 @@ func Serializing() {
 
 	fmt.Printf("Original Session Record: %# v\n", pretty.Formatter(loadedSession))
 	fmt.Printf("Deserialized Session Record: %# v\n", pretty.Formatter(deserializedSession))
+
 }
+
+func Fingerprint() {
+	serializer := newSerializer()
+
+	alice := newUser("Alice", 1, serializer)
+	bob := newUser("Bob", 1, serializer)
+
+	fp := fingerprint.NewDisplay(
+		alice.identityKeyPair.PublicKey().Serialize(),
+		bob.identityKeyPair.PublicKey().Serialize(),
+	)
+
+	fmt.Println(fp.DisplayText())
+}
+
+//func init() {
+// Logger.setup(Debug)
+//logger.Configure("")
+//logger.Setup({Debug})
+//}

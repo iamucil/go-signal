@@ -12,6 +12,7 @@ func main() {
 	regID := keyhelper.GenerateRegistrationID()
 	fmt.Println(regID)
 	signal.Serializing()
+	signal.Fingerprint()
 
 	payload := slack.Payload{
 		Text:      "User with phone number +phone-number has been registered into radiumchat",
