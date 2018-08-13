@@ -3,8 +3,11 @@ package main
 import (
 	"fmt"
 
+	"encoding/json"
 	"github.com/RadicalApp/libsignal-protocol-go/util/keyhelper"
+	"github.com/graphql-go/graphql"
 	"github.com/iamucil/go-signal/signal"
+	"log"
 	// slack "github.com/monochromegane/slack-incoming-webhooks"
 )
 
@@ -14,6 +17,35 @@ func main() {
 	signal.Serializing()
 	signal.Fingerprint()
 
+	// schema
+	fields := graphql.Fields{
+		"Hello": &graphql.Field{
+			Type: graphql.String,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				return "world", nil
+			},
+		},
+	}
+
+	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: fields}
+	schemaConfig := graphql.SchemaConfig{Query: graphql.NewObject(rootQuery)}
+	schema, err := graphql.NewSchema(schemaConfig)
+	if err != nil {
+		log.Fatalf("failed to create new schema, error: %v", err)
+	}
+
+	// Query
+	query := `{
+        Hello
+    }`
+	params := graphql.Params{Schema: schema, RequestString: query}
+	r := graphql.Do(params)
+	if len(r.Errors) > 0 {
+		log.Fatalf("failed to execute graphql operation, errors: %v", r.Errors)
+	}
+
+	rJSON, _ := json.Marshal(r)
+	fmt.Printf("%s \n", rJSON)
 	// payload := slack.Payload{
 	// 	Text:      "User with phone number +phone-number has been registered into radiumchat",
 	// 	IconEmoji: ":robot_face:",
