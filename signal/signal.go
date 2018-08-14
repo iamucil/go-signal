@@ -34,7 +34,7 @@ func Serializing() {
 		bob.signedPreKey.Signature(),
 		bob.identityKeyPair.PublicKey(),
 	)
-	// fmt.Printf("Retrieved key: %# v\n", retrivedPreKey)
+
 	// process Bob's retrieved prekey to establish a session
 	alice.sessionBuilder.ProcessBundle(retrivedPreKey)
 
@@ -50,7 +50,7 @@ func Serializing() {
 	serializedSession := loadedSession.Serialize()
 	logger.Debug(string(serializedSession))
 
-	// // try deserializing our session back into an object
+	// try deserializing our session back into an object
 	deserializedSession, err := record.NewSessionFromBytes(serializedSession, serializer.Session, serializer.State)
 	if err != nil {
 		logger.Error("Failed to deserilize session")
