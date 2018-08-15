@@ -8,6 +8,7 @@ import (
 	"github.com/graphql-go/graphql"
 	gqlhandler "github.com/graphql-go/graphql-go-handler"
 	"github.com/iamucil/go-signal/signal"
+	"github.com/iamucil/go-signal/util"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -32,14 +33,17 @@ type Comment struct {
 }
 
 // Account
+/*
 type Account struct {
 	ID        string `json:"id,omitempty"`
 	Firstname string `json:"firstname"`
 	Lastname  string `json:"lastname"`
 	Type      string `json:"type"`
 }
+*/
 
 func main() {
+	// fmt.Printf("%v", []util.Account)
 	regID := keyhelper.GenerateRegistrationID()
 	fmt.Println(regID)
 	signal.Serializing()
@@ -164,7 +168,7 @@ func createQueryType(postType *graphql.Object) graphql.ObjectConfig {
 				log.Printf("Fetching account id: %v", v)
 
 				// return "world", nil
-				return Account{}, nil
+				return util.Account{}, nil
 			},
 		},
 	}}
